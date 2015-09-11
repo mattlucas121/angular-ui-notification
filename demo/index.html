@@ -47,6 +47,13 @@
             </div>
 
             <div class="container">
+                <h3>Notification full screen</h3>
+                <div class="btn-group-vertical">
+                    <button class="btn btn-danger" ng-click="fullWidth()">Full Width Notification</button>
+                </div>
+            </div>
+
+            <div class="container">
                 <h3>Change position notification</h3>
                 <div class="btn-group-vertical">
                     <button class="btn btn-success" ng-click="TopLeft()">Top Left Notification</button>
@@ -84,14 +91,14 @@
         </script>
 
         <script src="angular.min.js"></script>
-        <script src="angular-ui-notification.min.js"></script>  
+        <script src="angular-ui-notification.min.js"></script>
         <script type="text/javascript">
             angular.module('notificationTest', ['ui-notification']);
 
             angular.module('notificationTest')
 
             .controller('notificationController', function($scope, Notification) {
-                
+
                 $scope.primary = function() {
                     Notification('Primary notification');
                 };
@@ -116,6 +123,14 @@
 
                 $scope.primaryTitle = function() {
                     Notification({message: 'Primary notification', title: 'Primary notification'});
+                };
+
+                // ==
+
+                // ==
+
+                $scope.fullWidth = function() {
+                    Notification({message: 'Full width notification', fullWidth: true, delay: null, permanent: true});
                 };
 
                 // ==
@@ -155,7 +170,7 @@
                     Notification.warning({message: 'warning Bottom Left', positionY: 'bottom', positionX: 'left'});
                 };
 
-                // == 
+                // ==
 
                 $scope.nTitle = "Title from other scope";
                 $scope.nClicksLog = [];

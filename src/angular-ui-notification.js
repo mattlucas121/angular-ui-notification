@@ -45,6 +45,8 @@ angular.module('ui-notification').provider('Notification', function() {
             args.positionY = args.positionY ? args.positionY : options.positionY;
             args.positionX = args.positionX ? args.positionX : options.positionX;
             args.replaceMessage = args.replaceMessage ? args.replaceMessage : options.replaceMessage;
+            args.fullWidth = args.fullWidth ? args.fullWidth : false;
+            args.permanent = args.permanent ? args.permanent : false;
 
             $http.get(args.template,{cache: $templateCache}).success(function(template) {
 
@@ -96,21 +98,31 @@ angular.module('ui-notification').provider('Notification', function() {
                 templateElement._positionY = args.positionY;
                 templateElement._positionX = args.positionX;
                 templateElement.addClass(args.type);
-                templateElement.bind('webkitTransitionEnd oTransitionEnd otransitionend transitionend msTransitionEnd click', function(e){
-                    e = e.originalEvent || e;
-                    if (e.type === 'click' || (e.propertyName === 'opacity' && e.elapsedTime >= 1)){
-                        templateElement.remove();
-                        messageElements.splice(messageElements.indexOf(templateElement), 1);
-                        reposite();
-                    }
-                });
+
+                if (args.fullWidth) {
+                    templateElement.addClass('full-width');
+                }
+
+                if (!args.permanent) {
+                    templateElement.bind('webkitTransitionEnd oTransitionEnd otransitionend transitionend msTransitionEnd click', function(e){
+                        e = e.originalEvent || e;
+                        if (e.type === 'click' || (e.propertyName === 'opacity' && e.elapsedTime >= 1)){
+                            templateElement.remove();
+                            messageElements.splice(messageElements.indexOf(templateElement), 1);
+                            reposite();
+                        }
+                    });
+                } else {
+                    templateElement.addClass('permanent');
+                }
+
                 if (angular.isNumber(args.delay)) {
                     $timeout(function() {
                         templateElement.addClass('killed');
                     }, args.delay);
                 }
 
-                angular.element(document.getElementsByTagName('body')).append(templateElement);
+                angular.element(document.getElementsByTagName('body')).prepend(templateElement);
                 var offset = -(parseInt(templateElement[0].offsetHeight) + 50);
                 templateElement.css(templateElement._positionY, offset + "px");
                 messageElements.push(templateElement);
@@ -143,6 +155,10 @@ angular.module('ui-notification').provider('Notification', function() {
             });
 
             return deferred.promise;
+        };
+
+        notify.permanent = function (args) {
+            return this(args, 'permanent');
         };
 
         notify.primary = function(args) {
